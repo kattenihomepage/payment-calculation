@@ -59,29 +59,47 @@ function renderPayments() {
 }
 
 function renderSettlements() {
-  settlementsList.innerHTML = '';
-  if (members.length === 0 || payments.length === 0) return;
-
-  const total = payments.reduce((sum, p) => sum + p.amount, 0);
-  const avg = total / members.length;
-  const paid = {};
-  members.forEach(m => paid[m.id] = 0);
-  payments.forEach(p => paid[p.memberId] += p.amount);
-
-  const diffs = members.map(m => ({
-    id: m.id,
-    name: m.name,
-    diff: paid[m.id] - avg
-  }));
-
-  // 簡易分配計算（正確な最適化ロジックは後日実装予定）
-  diffs.forEach(d => {
-    const div = document.createElement('div');
-    div.className = 'tile';
-    div.textContent = `${d.name}: ${d.diff >=0 ? '受取' : '支払'} ${Math.abs(Math.round(d.diff))}円`;
-    settlementsList.appendChild(div);
-  });
-}
+    settlementsList.innerHTML = '';
+    if (members.length === 0 || payments.length === 0) return;
+  
+    const total = payments.reduce((sum, p) => sum + p.amount, 0);
+    const avg = total / members.length;
+    const paid = {};
+    members.forEach(m => paid[m.id] = 0);
+    payments.forEach(p => paid[p.memberId] += p.amount);
+  
+    // 各メンバーの差額（プラスが受取、マイナスが支払）
+    const diffs = members.map(m => ({
+      id: m.id,
+      name: m.name,
+      diff: paid[m.id] - avg
+    }));
+  
+    // 支払い者（負債側）、受取者（債権側）に分ける
+    const payers = diffs.filter(d => d.diff < 0).map(d => ({ ...d, diff: -d.diff })).sort((a,b) => a.diff - b.diff);
+    const receivers = diffs.filter(d => d.diff > 0).sort((a,b) => b.diff - a.diff);
+  
+    let i = 0; // payers index
+    let j = 0; // receivers index
+  
+    while(i < payers.length && j < receivers.length) {
+      const payer = payers[i];
+      const receiver = receivers[j];
+      const amount = Math.min(payer.diff, receiver.diff);
+  
+      const div = document.createElement('div');
+      div.className = 'tile';
+      div.textContent = `${payer.name} → ${receiver.name} : ${Math.round(amount)}円`;
+      settlementsList.appendChild(div);
+  
+      payer.diff -= amount;
+      receiver.diff -= amount;
+  
+      if (payer.diff === 0) i++;
+      if (receiver.diff === 0) j++;
+    }
+  }
+  
 
 // モーダル表示
 function openPaymentModal() {
