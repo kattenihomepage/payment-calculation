@@ -96,6 +96,7 @@ function openPaymentModal(payment = null) {
     closeModal();
     renderPayments();
     renderSettlements();
+    renderMembers();  // 追加：支払い変化でメンバー削除ボタン状態も更新
   };
 
   modal.classList.remove('hidden');
@@ -130,10 +131,6 @@ function renderMembers() {
     deleteBtn.textContent = '削除';
     deleteBtn.disabled = usedInPayments;
     deleteBtn.onclick = () => {
-      if (usedInPayments) {
-        alert('このメンバーは支払いに使われているため削除できません。');
-        return;
-      }
       if (confirm(`「${m.name}」を削除しますか？`)) {
         members = members.filter(x => x.id !== m.id);
         renderMembers();
@@ -173,6 +170,7 @@ function renderPayments() {
         payments = payments.filter(pay => pay.id !== p.id);
         renderPayments();
         renderSettlements();
+        renderMembers();  // 追加：支払い削除でメンバー削除ボタンの状態更新
       }
     };
     div.appendChild(deleteBtn);
