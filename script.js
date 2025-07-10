@@ -32,12 +32,77 @@ addMemberBtn.onclick = () => {
   renderSettlements();
 };
 
-// 支払い追加（モーダル表示）
-addPaymentBtn.onclick = () => {
+// 支払い追加・編集用共通モーダル
+function openPaymentModal(payment = null) {
+  modalTitle.textContent = payment ? '支払い編集' : '支払い追加';
+  modalBody.innerHTML = '';
+
   if (members.length === 0) {
     alert('先にメンバーを追加してください');
     return;
   }
+
+  // メンバー選択
+  const memberSelect = document.createElement('select');
+  members.forEach(m => {
+    const option = document.createElement('option');
+    option.value = m.id;
+    option.textContent = m.name;
+    if (payment && m.id === payment.memberId) option.selected = true;
+    memberSelect.appendChild(option);
+  });
+  modalBody.appendChild(memberSelect);
+
+  // 内容入力
+  const descInput = document.createElement('input');
+  descInput.type = 'text';
+  descInput.placeholder = '内容（任意）';
+  descInput.value = payment ? payment.description : '';
+  modalBody.appendChild(descInput);
+
+  // 金額入力
+  const amountInput = document.createElement('input');
+  amountInput.type = 'number';
+  amountInput.placeholder = '金額（必須）';
+  amountInput.value = payment ? payment.amount : '';
+  modalBody.appendChild(amountInput);
+
+  modalSaveBtn.onclick = () => {
+    const memberId = memberSelect.value;
+    const description = descInput.value.trim();
+    const amount = parseInt(amountInput.value);
+    if (!memberId || !amount || amount <= 0) {
+      alert('支払者と正しい金額を入力してください');
+      return;
+    }
+
+    if (payment) {
+      // 編集モード
+      const index = payments.findIndex(p => p.id === payment.id);
+      if (index !== -1) {
+        payments[index].memberId = memberId;
+        payments[index].description = description;
+        payments[index].amount = amount;
+      }
+    } else {
+      // 追加モード
+      payments.push({
+        id: Date.now().toString(),
+        memberId,
+        description,
+        amount
+      });
+    }
+    closeModal();
+    renderPayments();
+    renderSettlements();
+  };
+
+  modal.classList.remove('hidden');
+}
+
+// 支払い追加ボタン
+addPaymentBtn.onclick = () => {
   openPaymentModal();
 };
 
@@ -81,16 +146,37 @@ function renderMembers() {
   });
 }
 
-// 支払い表示更新
+// 支払い表示更新（編集・削除ボタン付き）
 function renderPayments() {
   paymentsList.innerHTML = '';
   payments.forEach(p => {
     const m = members.find(m => m.id === p.memberId);
     const div = document.createElement('div');
     div.className = 'tile';
-    div.innerHTML = `<strong>${p.description || '(内容なし)'}</strong><br>
+
+    const descHtml = `<strong>${p.description || '(内容なし)'}</strong><br>
       支払者: ${m ? m.name : '不明'}<br>
       金額: ${p.amount}円`;
+    div.innerHTML = descHtml;
+
+    // 編集ボタン
+    const editBtn = document.createElement('button');
+    editBtn.textContent = '編集';
+    editBtn.onclick = () => openPaymentModal(p);
+    div.appendChild(editBtn);
+
+    // 削除ボタン
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '削除';
+    deleteBtn.onclick = () => {
+      if (confirm('この支払いを削除しますか？')) {
+        payments = payments.filter(pay => pay.id !== p.id);
+        renderPayments();
+        renderSettlements();
+      }
+    };
+    div.appendChild(deleteBtn);
+
     paymentsList.appendChild(div);
   });
 }
@@ -164,55 +250,6 @@ function openEditMemberModal(member) {
       renderSettlements();
       closeModal();
     }
-  };
-
-  modal.classList.remove('hidden');
-}
-
-// 支払い追加モーダルを開く
-function openPaymentModal() {
-  modalTitle.textContent = '支払い追加';
-  modalBody.innerHTML = '';
-
-  // メンバー選択
-  const memberSelect = document.createElement('select');
-  members.forEach(m => {
-    const option = document.createElement('option');
-    option.value = m.id;
-    option.textContent = m.name;
-    memberSelect.appendChild(option);
-  });
-  modalBody.appendChild(memberSelect);
-
-  // 内容入力
-  const descInput = document.createElement('input');
-  descInput.type = 'text';
-  descInput.placeholder = '内容（任意）';
-  modalBody.appendChild(descInput);
-
-  // 金額入力
-  const amountInput = document.createElement('input');
-  amountInput.type = 'number';
-  amountInput.placeholder = '金額（必須）';
-  modalBody.appendChild(amountInput);
-
-  modalSaveBtn.onclick = () => {
-    const memberId = memberSelect.value;
-    const description = descInput.value.trim();
-    const amount = parseInt(amountInput.value);
-    if (!memberId || !amount || amount <= 0) {
-      alert('支払者と正しい金額を入力してください');
-      return;
-    }
-    payments.push({
-      id: Date.now().toString(),
-      memberId,
-      description,
-      amount
-    });
-    closeModal();
-    renderPayments();
-    renderSettlements();
   };
 
   modal.classList.remove('hidden');
