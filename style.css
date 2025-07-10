@@ -33,12 +33,27 @@ button {
   }
   
   .tile {
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 名前とボタンを左右に分ける */
     padding: 8px;
     margin: 5px 0;
     background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
   }
+  
+  .tile .name {
+    flex-grow: 1;
+  }
+  
+  /* ボタン群の右寄せ */
+  .button-group {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  
   
   #modal {
     position: fixed;

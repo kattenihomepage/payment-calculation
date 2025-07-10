@@ -109,75 +109,85 @@ addPaymentBtn.onclick = () => {
 
 // メンバー表示更新
 function renderMembers() {
-  membersList.innerHTML = '';
-  members.forEach(m => {
-    const div = document.createElement('div');
-    div.className = 'tile';
-
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = m.name;
-    nameSpan.className = 'name';
-    div.appendChild(nameSpan);
-
-    // 編集ボタン
-    const editBtn = document.createElement('button');
-    editBtn.textContent = '編集';
-    editBtn.onclick = () => openEditMemberModal(m);
-    div.appendChild(editBtn);
-
-    // 削除ボタン（支払いに使用中は無効化）
-    const usedInPayments = payments.some(p => p.memberId === m.id);
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '削除';
-    deleteBtn.disabled = usedInPayments;
-    deleteBtn.onclick = () => {
-      if (confirm(`「${m.name}」を削除しますか？`)) {
-        members = members.filter(x => x.id !== m.id);
-        renderMembers();
-        renderSettlements();
-      }
-    };
-    div.appendChild(deleteBtn);
-
-    membersList.appendChild(div);
-  });
-}
+    membersList.innerHTML = '';
+    members.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'tile';
+  
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = m.name;
+      nameSpan.className = 'name';
+      div.appendChild(nameSpan);
+  
+      // ボタンラッパー作成
+      const buttonGroup = document.createElement('div');
+      buttonGroup.className = 'button-group';
+  
+      // 編集ボタン
+      const editBtn = document.createElement('button');
+      editBtn.textContent = '編集';
+      editBtn.onclick = () => openEditMemberModal(m);
+      buttonGroup.appendChild(editBtn);
+  
+      // 削除ボタン（支払いに使用中は無効化）
+      const usedInPayments = payments.some(p => p.memberId === m.id);
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = '削除';
+      deleteBtn.disabled = usedInPayments;
+      deleteBtn.onclick = () => {
+        if (confirm(`「${m.name}」を削除しますか？`)) {
+          members = members.filter(x => x.id !== m.id);
+          renderMembers();
+          renderSettlements();
+        }
+      };
+      buttonGroup.appendChild(deleteBtn);
+  
+      div.appendChild(buttonGroup);
+      membersList.appendChild(div);
+    });
+  }  
 
 // 支払い表示更新（編集・削除ボタン付き）
 function renderPayments() {
-  paymentsList.innerHTML = '';
-  payments.forEach(p => {
-    const m = members.find(m => m.id === p.memberId);
-    const div = document.createElement('div');
-    div.className = 'tile';
-
-    const descHtml = `<strong>${p.description || '(内容なし)'}</strong><br>
-      支払者: ${m ? m.name : '不明'}<br>
-      金額: ${p.amount}円`;
-    div.innerHTML = descHtml;
-
-    // 編集ボタン
-    const editBtn = document.createElement('button');
-    editBtn.textContent = '編集';
-    editBtn.onclick = () => openPaymentModal(p);
-    div.appendChild(editBtn);
-
-    // 削除ボタン
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = '削除';
-    deleteBtn.onclick = () => {
-      if (confirm('この支払いを削除しますか？')) {
-        payments = payments.filter(pay => pay.id !== p.id);
-        renderPayments();
-        renderSettlements();
-        renderMembers();  // 追加：支払い削除でメンバー削除ボタンの状態更新
-      }
-    };
-    div.appendChild(deleteBtn);
-
-    paymentsList.appendChild(div);
-  });
-}
+    paymentsList.innerHTML = '';
+    payments.forEach(p => {
+      const m = members.find(m => m.id === p.memberId);
+      const div = document.createElement('div');
+      div.className = 'tile';
+  
+      const descHtml = `<strong>${p.description || '(内容なし)'}</strong><br>
+        支払者: ${m ? m.name : '不明'}<br>
+        金額: ${p.amount}円`;
+      div.innerHTML = descHtml;
+  
+      // ボタンラッパー作成
+      const buttonGroup = document.createElement('div');
+      buttonGroup.className = 'button-group';
+  
+      // 編集ボタン
+      const editBtn = document.createElement('button');
+      editBtn.textContent = '編集';
+      editBtn.onclick = () => openPaymentModal(p);
+      buttonGroup.appendChild(editBtn);
+  
+      // 削除ボタン
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = '削除';
+      deleteBtn.onclick = () => {
+        if (confirm('この支払いを削除しますか？')) {
+          payments = payments.filter(pay => pay.id !== p.id);
+          renderPayments();
+          renderSettlements();
+          renderMembers();  // 状態更新
+        }
+      };
+      buttonGroup.appendChild(deleteBtn);
+  
+      div.appendChild(buttonGroup);
+      paymentsList.appendChild(div);
+    });
+  }
 
 // 受け渡し表示更新（支払う人→受け取る人 : 金額）
 function renderSettlements() {
