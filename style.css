@@ -1,0 +1,39 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+    background: #f9f9f9;
+  }
+  
+  section {
+    margin-bottom: 30px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  }
+  
+  button {
+    margin-top: 10px;
+    padding: 5px 10px;
+  }
+  
+  #modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #modal.hidden {
+    display: none;
+  }
+  
+  #modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+  }
+  

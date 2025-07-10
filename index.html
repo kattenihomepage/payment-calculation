@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>割り勘アプリ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>割り勘アプリ</h1>
+
+  <!-- メンバー情報 -->
+  <section id="members-section">
+    <h2>メンバー情報</h2>
+    <div id="members-list"></div>
+    <button id="edit-members-btn">編集</button>
+  </section>
+
+  <!-- 支払い情報（計算結果） -->
+  <section id="settlements-section">
+    <h2>支払い情報（計算結果）</h2>
+    <div id="settlements-list"></div>
+  </section>
+
+  <!-- 金額情報 -->
+  <section id="payments-section">
+    <h2>金額情報</h2>
+    <div id="payments-list"></div>
+    <button id="add-payment-btn">＋ 追加</button>
+  </section>
+
+  <!-- モーダル -->
+  <div id="modal" class="hidden">
+    <div id="modal-content">
+      <h3 id="modal-title"></h3>
+      <div id="modal-body"></div>
+      <button id="modal-save-btn">保存</button>
+      <button id="modal-close-btn">閉じる</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
