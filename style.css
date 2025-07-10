@@ -16,10 +16,22 @@ body {
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
   }
+
+/* メンバー入力欄 */
+#new-member-name {
+    font-size: 16px;
+    padding: 10px 8px;
+    height: 40px;       /* 縦幅を大きめに */
+    box-sizing: border-box;
+    width: 200px;       /* 横幅も調整可 */
+  }
   
-  button {
-    margin-top: 10px;
-    padding: 5px 10px;
+/* ボタン全般の高さ調整 */
+button {
+    font-size: 14px;
+    padding: 6px 12px;
+    height: 32px;       /* 縦幅を入力欄より小さく */
+    cursor: pointer;
   }
   
   .tile {
