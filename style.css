@@ -30,7 +30,6 @@ body {
 button {
     font-size: 14px;
     padding: 6px 12px;
-    height: 32px;       /* 縦幅を入力欄より小さく */
     cursor: pointer;
   }
   
