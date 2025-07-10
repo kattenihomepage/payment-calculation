@@ -45,6 +45,44 @@ function renderMembers() {
   });
 }
 
+function renderMembers() {
+    membersList.innerHTML = '';
+    members.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'tile';
+      
+      // 名前表示
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = m.name;
+      div.appendChild(nameSpan);
+      
+      // 編集ボタン
+      const editBtn = document.createElement('button');
+      editBtn.textContent = '編集';
+      editBtn.onclick = () => openEditMemberModal(m);
+      div.appendChild(editBtn);
+      
+      // 削除ボタン（支払いに使われている場合は無効化）
+      const usedInPayments = payments.some(p => p.memberId === m.id);
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = '削除';
+      deleteBtn.disabled = usedInPayments;
+      deleteBtn.onclick = () => {
+        if (!usedInPayments && confirm(`「${m.name}」を削除しますか？`)) {
+          members = members.filter(x => x.id !== m.id);
+          renderMembers();
+          renderSettlements();
+        } else if (usedInPayments) {
+          alert('このメンバーは支払いに使用されているため削除できません。');
+        }
+      };
+      div.appendChild(deleteBtn);
+  
+      membersList.appendChild(div);
+    });
+}
+  
+
 function renderPayments() {
   paymentsList.innerHTML = '';
   payments.forEach(p => {
